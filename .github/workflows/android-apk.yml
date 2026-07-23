@@ -30,6 +30,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Configure debug signing
+        working-directory: android
+        run: |
+          printf '%s\n' \
+            'storeFile=debug.keystore' \
+            'storePassword=android' \
+            'keyAlias=androiddebugkey' \
+            'keyPassword=android' > keystore.properties
+
       - name: Build debug APK
         working-directory: android
         run: ./gradlew --no-daemon assembleDebug
