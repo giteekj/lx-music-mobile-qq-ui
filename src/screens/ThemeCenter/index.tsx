@@ -32,7 +32,7 @@ const ThemeCard = memo(({ theme, isActive, onPress }: {
         </View>
         {isActive && (
           <View style={[styles.activeBadge, { backgroundColor: primaryColor }]}>
-            <Icon name="check" color="#fff" rawSize={12} />
+            <Icon name="checkbox-marked" color="#fff" rawSize={12} />
           </View>
         )}
       </View>

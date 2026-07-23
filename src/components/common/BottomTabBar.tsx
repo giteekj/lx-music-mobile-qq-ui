@@ -15,9 +15,9 @@ export interface TabItem {
 export const TAB_ITEMS: TabItem[] = [
   { id: 'nav_search', label: '首页', icon: 'home' },
   { id: 'nav_songlist', label: '音乐馆', icon: 'album' },
-  { id: 'nav_top', label: '排行榜', icon: 'list' },
+  { id: 'nav_top', label: '排行榜', icon: 'leaderboard' },
   { id: 'nav_love', label: '我的', icon: 'love' },
-  { id: 'nav_setting', label: '设置', icon: 'cog' },
+  { id: 'nav_setting', label: '设置', icon: 'setting' },
 ]
 
 interface BottomTabBarProps {

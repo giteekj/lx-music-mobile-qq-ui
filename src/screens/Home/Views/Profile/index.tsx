@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, useEffect, useState } from 'react'
 import {
   View, ScrollView, TouchableOpacity, Image,
 } from 'react-native'
@@ -9,7 +9,8 @@ import { Icon } from '@/components/common/Icon'
 import { useI18n } from '@/lang'
 import { pushThemeCenterScreen } from '@/navigation/navigation'
 import { COMPONENT_IDS } from '@/config/constant'
-import { useMyList } from '@/store/list/hook'
+import { getListMusics } from '@/core/list'
+import { LIST_IDS } from '@/config/constant'
 import { setNavActiveId } from '@/core/common'
 import commonState from '@/store/common/state'
 
@@ -40,7 +41,7 @@ const SectionHeader = memo(({ title, onMore }: { title: string; onMore?: () => v
       {onMore ? (
         <TouchableOpacity onPress={onMore} style={styles.moreBtn}>
           <Text size={13} color={theme['c-primary']}>更多</Text>
-          <Icon name="angle-right" color={theme['c-primary']} rawSize={14} />
+          <Icon name="chevron-right" color={theme['c-primary']} rawSize={14} />
         </TouchableOpacity>
       ) : null}
     </View>
@@ -50,10 +51,19 @@ const SectionHeader = memo(({ title, onMore }: { title: string; onMore?: () => v
 export default () => {
   const t = useI18n()
   const theme = useTheme()
-  const userLists = useMyList()
+  const [loveCount, setLoveCount] = useState('0')
 
-  const loveList = userLists.find((l: any) => l.id === 'love')
-  const loveCount = loveList ? `${loveList.list.length}` : '0'
+  useEffect(() => {
+    const updateLoveCount = () => {
+      void getListMusics(LIST_IDS.LOVE).then(list => setLoveCount(`${list.length}`))
+    }
+    const handleListUpdate = (ids: string[]) => {
+      if (ids.includes(LIST_IDS.LOVE)) updateLoveCount()
+    }
+    updateLoveCount()
+    global.app_event.on('myListMusicUpdate', handleListUpdate)
+    return () => global.app_event.off('myListMusicUpdate', handleListUpdate)
+  }, [])
 
   const handleOpenSettings = () => {
     setNavActiveId('nav_setting')
@@ -77,7 +87,7 @@ export default () => {
           </View>
         </View>
         <TouchableOpacity style={styles.settingsBtn} onPress={handleOpenSettings}>
-          <Icon name="cog" color={theme['c-font']} rawSize={22} />
+          <Icon name="setting" color={theme['c-font']} rawSize={22} />
         </TouchableOpacity>
       </View>
 
@@ -85,9 +95,9 @@ export default () => {
       <View style={[styles.entriesCard, { backgroundColor: theme['c-primary-light-1000'] }]}>
         <View style={styles.entriesRow}>
           <QuickEntry icon="love" label="收藏" count={loveCount} color="#ff6b6b" />
-          <QuickEntry icon="download" label="本地" color="#4ecdc4" />
-          <QuickEntry icon="list2" label="有声" color="#45b7d1" />
-          <QuickEntry icon="time" label="最近" color="#f7b731" />
+          <QuickEntry icon="download-2" label="本地" color="#4ecdc4" />
+          <QuickEntry icon="comment" label="有声" color="#45b7d1" />
+          <QuickEntry icon="music_time" label="最近" color="#f7b731" />
         </View>
       </View>
 
@@ -95,18 +105,18 @@ export default () => {
       <View style={[styles.menuCard, { backgroundColor: theme['c-primary-light-1000'] }]}>
         <TouchableOpacity style={styles.menuItem} activeOpacity={0.6} onPress={handleOpenThemeCenter}>
           <View style={[styles.menuIconWrap, { backgroundColor: theme['c-primary-light-800-alpha-300'] }]}>
-            <Icon name="palette" color={theme['c-primary']} rawSize={18} />
+            <Icon name="slider" color={theme['c-primary']} rawSize={18} />
           </View>
           <Text size={15} color={theme['c-font']} style={styles.menuText}>装扮中心</Text>
-          <Icon name="angle-right" color={theme['c-font-label']} rawSize={16} />
+          <Icon name="chevron-right" color={theme['c-font-label']} rawSize={16} />
         </TouchableOpacity>
         <View style={[styles.divider, { backgroundColor: theme['c-border-background'] }]} />
         <TouchableOpacity style={styles.menuItem} activeOpacity={0.6} onPress={handleOpenSettings}>
           <View style={[styles.menuIconWrap, { backgroundColor: theme['c-primary-light-800-alpha-300'] }]}>
-            <Icon name="cog" color={theme['c-primary']} rawSize={18} />
+            <Icon name="setting" color={theme['c-primary']} rawSize={18} />
           </View>
           <Text size={15} color={theme['c-font']} style={styles.menuText}>设置</Text>
-          <Icon name="angle-right" color={theme['c-font-label']} rawSize={16} />
+          <Icon name="chevron-right" color={theme['c-font-label']} rawSize={16} />
         </TouchableOpacity>
       </View>
 
@@ -114,7 +124,7 @@ export default () => {
       <View style={[styles.menuCard, { backgroundColor: theme['c-primary-light-1000'] }]}>
         <SectionHeader title="最近播放" />
         <View style={styles.emptyRecent}>
-          <Icon name="time" color={theme['c-font-label']} rawSize={40} />
+          <Icon name="music_time" color={theme['c-font-label']} rawSize={40} />
           <Text size={14} color={theme['c-font-label']} style={{ marginTop: 8 }}>暂无最近播放记录</Text>
         </View>
       </View>
