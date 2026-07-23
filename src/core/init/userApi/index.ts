@@ -1,10 +1,11 @@
 import { type InitParams, onScriptAction, sendAction, type ResponseParams, type UpdateInfoParams, type RequestParams } from '@/utils/nativeModules/userApi'
-import { log, setUserApiList, setUserApiStatus } from '@/core/userApi'
+import { log, setUserApiList, setUserApiStatus, importUserApi } from '@/core/userApi'
 import settingState from '@/store/setting/state'
 import BackgroundTimer from 'react-native-background-timer'
 import { fetchData } from './request'
 import { getUserApiList } from '@/utils/data'
 import { confirmDialog, openUrl, tipDialog } from '@/utils/tools'
+import yehuaScript from '@/resources/scripts/yehua-source'
 
 
 export default async(setting: LX.AppSetting) => {
@@ -252,5 +253,17 @@ export default async(setting: LX.AppSetting) => {
     }
   })
 
-  setUserApiList(await getUserApiList())
+  const list = await getUserApiList()
+  setUserApiList(list)
+
+  // Auto-import built-in Yehua source if not present
+  if (!list.some(api => api.name.includes('野花'))) {
+    try {
+      const info = await importUserApi(yehuaScript)
+      // Store the auto-imported source ID so init/index.ts can auto-select it
+      global.lx.autoImportedYehuaId = info.id
+    } catch (err) {
+      console.log('Auto-import Yehua source failed:', err)
+    }
+  }
 }

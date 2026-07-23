@@ -48,7 +48,13 @@ export default async() => {
   await initUserApi(setting)
   bootLog('User Api inited.')
 
-  setApiSource(setting['common.apiSource'])
+  // Auto-select built-in Yehua source on first install
+  const yehuaId = (global.lx as any).autoImportedYehuaId
+  if (yehuaId) {
+    setApiSource(yehuaId)
+  } else {
+    setApiSource(setting['common.apiSource'])
+  }
   bootLog('Api inited.')
 
   registerPlaybackService()

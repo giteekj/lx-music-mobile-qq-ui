@@ -6,6 +6,7 @@ import {
   PLAY_DETAIL_SCREEN,
   SONGLIST_DETAIL_SCREEN,
   COMMENT_SCREEN,
+  THEME_CENTER_SCREEN,
   // SETTING_SCREEN,
 } from './screenNames'
 
@@ -303,6 +304,40 @@ export function pushSonglistDetailScreen(componentId: string, info: ListInfoItem
     })
   })
 }
+export function pushThemeCenterScreen(componentId: string) {
+  requestAnimationFrame(() => {
+    const theme = themeState.theme
+    void Navigation.push(componentId, {
+      component: {
+        name: THEME_CENTER_SCREEN,
+        options: {
+          topBar: { visible: false, height: 0, drawBehind: false },
+          statusBar: {
+            drawBehind: true,
+            visible: true,
+            style: getStatusBarStyle(theme.isDark),
+            backgroundColor: 'transparent',
+          },
+          navigationBar: { backgroundColor: theme['c-content-background'] },
+          layout: { componentBackgroundColor: theme['c-content-background'] },
+          animations: {
+            push: {
+              content: {
+                translationX: { from: windowSizeTools.getSize().width, to: 0, duration: 300 },
+              },
+            },
+            pop: {
+              content: {
+                translationX: { from: 0, to: windowSizeTools.getSize().width, duration: 300 },
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+}
+
 export function pushCommentScreen(componentId: string) {
   /*
     Navigation.setDefaultOptions({

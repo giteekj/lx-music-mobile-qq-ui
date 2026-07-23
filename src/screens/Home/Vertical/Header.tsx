@@ -8,31 +8,18 @@ import Text from '@/components/common/Text'
 import StatusBar from '@/components/common/StatusBar'
 import { scaleSizeH } from '@/utils/pixelRatio'
 import { HEADER_HEIGHT } from '@/config/constant'
-import { type InitState as CommonState } from '@/store/common/state'
 import SearchTypeSelector from '@/screens/Home/Views/Search/SearchTypeSelector'
 
-const headerComponents: Partial<Record<CommonState['navActiveId'], React.ReactNode>> = {
+const headerComponents: Partial<Record<string, React.ReactNode>> = {
   nav_search: <SearchTypeSelector />,
 }
 
-const TAB_HEADER_TITLES: Record<string, string> = {
-  tab_home: 'nav_search',
-  tab_music_hall: 'nav_songlist',
-  tab_my: 'nav_love',
-}
-
-const PAGE_TAB_MAP: Record<string, string> = {
-  nav_search: 'tab_home',
-  nav_songlist: 'tab_music_hall',
-  nav_top: 'tab_music_hall',
-  nav_love: 'tab_my',
-  nav_setting: 'tab_my',
-}
-
-const TAB_DISPLAY_NAMES: Record<string, string> = {
-  tab_home: '首页',
-  tab_music_hall: '音乐馆',
-  tab_my: '我的',
+const PAGE_DISPLAY_NAMES: Record<string, string> = {
+  nav_search: '首页',
+  nav_songlist: '音乐馆',
+  nav_top: '排行榜',
+  nav_love: '我的',
+  nav_setting: '设置',
 }
 
 const Header = () => {
@@ -40,7 +27,6 @@ const Header = () => {
   const navActiveId = useNavActiveId()
   const t = useI18n()
   const statusBarHeight = useStatusbarHeight()
-  const currentTab = PAGE_TAB_MAP[navActiveId] || 'tab_home'
 
   return (
     <>
@@ -59,7 +45,7 @@ const Header = () => {
             <Icon name="logo" color={theme['c-primary-font']} size={20} />
           </View>
           <Text size={18} color={theme['c-font']} style={styles.titleText}>
-            {TAB_DISPLAY_NAMES[currentTab] || t(navActiveId)}
+            {PAGE_DISPLAY_NAMES[navActiveId] || t(navActiveId)}
           </Text>
         </View>
         {headerComponents[navActiveId] ?? null}
