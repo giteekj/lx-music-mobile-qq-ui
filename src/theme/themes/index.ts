@@ -128,7 +128,7 @@ export const getTheme = async() => {
     userThemes = await getUserTheme()
     theme = userThemes.find(theme => theme.id == themeId)
     if (!theme) {
-      themeId = settingState.setting['theme.id'] == 'auto' && shouldUseDarkColors ? 'black' : 'green'
+      themeId = settingState.setting['theme.id'] == 'auto' && shouldUseDarkColors ? 'qq_music' : 'green'
       theme = themes.find(theme => theme.id == themeId) as LX.Theme
     }
   }
