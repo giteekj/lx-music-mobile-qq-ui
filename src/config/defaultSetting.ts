@@ -73,9 +73,9 @@ const defaultSetting: LX.AppSetting = {
   'sync.enable': false,
 
   // 'theme.id': 'blue_plus',
-  'theme.id': 'green',
+  'theme.id': 'qq_music',
   'theme.lightId': 'green',
-  'theme.darkId': 'black',
+  'theme.darkId': 'qq_music',
   'theme.hideBgDark': false,
   'theme.dynamicBg': false,
   'theme.fontShadow': false,
