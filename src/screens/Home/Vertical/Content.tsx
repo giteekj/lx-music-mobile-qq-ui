@@ -1,60 +1,57 @@
-import { useEffect, useRef } from 'react'
-// import { getWindowSise, onDimensionChange } from '@/utils/tools'
-import DrawerNav from './DrawerNav'
+import { useCallback } from 'react'
+import { View } from 'react-native'
 import Header from './Header'
 import Main from './Main'
-import { useSettingValue } from '@/store/setting/hook'
-import { COMPONENT_IDS } from '@/config/constant'
-import DrawerLayoutFixed, { type DrawerLayoutFixedType } from '@/components/common/DrawerLayoutFixed'
-import { scaleSizeW } from '@/utils/pixelRatio'
+import BottomTabBar from '@/components/common/BottomTabBar'
+import { setNavActiveId } from '@/core/common'
+import { useNavActiveId } from '@/store/common/hook'
+import { useTheme } from '@/store/theme/hook'
+import { createStyle } from '@/utils/tools'
 
-const MAX_WIDTH = scaleSizeW(300)
+const PAGE_TAB_MAP: Record<string, string> = {
+  nav_search: 'tab_home',
+  nav_songlist: 'tab_music_hall',
+  nav_top: 'tab_music_hall',
+  nav_love: 'tab_my',
+  nav_setting: 'tab_my',
+}
+
+const getActiveTab = (navId: string): string => {
+  return PAGE_TAB_MAP[navId] || 'tab_home'
+}
+
+const TAB_PAGE_MAP: Record<string, string> = {
+  tab_home: 'nav_search',
+  tab_music_hall: 'nav_songlist',
+  tab_my: 'nav_love',
+}
 
 const Content = () => {
-  const drawer = useRef<DrawerLayoutFixedType>(null)
-  const drawerLayoutPosition = useSettingValue('common.drawerLayoutPosition')
+  const theme = useTheme()
+  const navActiveId = useNavActiveId()
 
-  useEffect(() => {
-    const changeVisible = (visible: boolean) => {
-      if (visible) {
-        drawer.current?.openDrawer()
-      } else {
-        drawer.current?.closeDrawer()
-      }
-    }
-
-    global.app_event.on('changeMenuVisible', changeVisible)
-
-    return () => {
-      global.app_event.off('changeMenuVisible', changeVisible)
+  const handleTabPress = useCallback((tabId: string) => {
+    const pageId = TAB_PAGE_MAP[tabId]
+    if (pageId) {
+      setNavActiveId(pageId)
     }
   }, [])
 
-  const navigationView = () => <DrawerNav />
-  // console.log('render drawer content')
+  const activeTab = getActiveTab(navActiveId)
 
   return (
-    <DrawerLayoutFixed
-      ref={drawer}
-      widthPercentage={0.7}
-      widthPercentageMax={MAX_WIDTH}
-      visibleNavNames={[COMPONENT_IDS.home]}
-      // drawerWidth={width}
-      drawerPosition={drawerLayoutPosition}
-      renderNavigationView={navigationView}
-    >
+    <View style={[styles.container, { backgroundColor: theme['c-main-background'] }]}>
       <Header />
       <Main />
-      {/* <View style={styles.container}>
-      </View> */}
-    </DrawerLayoutFixed>
+      <BottomTabBar activeTab={activeTab} onTabPress={handleTabPress} />
+    </View>
   )
 }
 
-// const styles = createStyle({
-//   container: {
-//     flex: 1,
-//   },
-// })
+const styles = createStyle({
+  container: {
+    flex: 1,
+  },
+})
 
 export default Content
