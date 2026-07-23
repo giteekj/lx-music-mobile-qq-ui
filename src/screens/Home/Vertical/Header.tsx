@@ -1,7 +1,4 @@
-import { View, TouchableOpacity } from 'react-native'
-// import Button from '@/components/common/Button'
-// import { navigations } from '@/navigation'
-// import { BorderWidths } from '@/theme'
+import { View } from 'react-native'
 import { useTheme } from '@/store/theme/hook'
 import { useNavActiveId, useStatusbarHeight } from '@/store/common/hook'
 import { useI18n } from '@/lang'
@@ -9,7 +6,6 @@ import { createStyle } from '@/utils/tools'
 import { Icon } from '@/components/common/Icon'
 import Text from '@/components/common/Text'
 import StatusBar from '@/components/common/StatusBar'
-import { useSettingValue } from '@/store/setting/hook'
 import { scaleSizeH } from '@/utils/pixelRatio'
 import { HEADER_HEIGHT } from '@/config/constant'
 import { type InitState as CommonState } from '@/store/common/state'
@@ -19,139 +15,84 @@ const headerComponents: Partial<Record<CommonState['navActiveId'], React.ReactNo
   nav_search: <SearchTypeSelector />,
 }
 
-
-// const LeftTitle = () => {
-//   const id = useNavActiveId()
-//   const t = useI18n()
-
-//   return <Text style={styles.leftTitle} size={18}>{t(id)}</Text>
-// }
-const LeftHeader = () => {
-  const theme = useTheme()
-  const id = useNavActiveId()
-  const t = useI18n()
-  const statusBarHeight = useStatusbarHeight()
-
-  const openMenu = () => {
-    global.app_event.changeMenuVisible(true)
-  }
-
-  return (
-    <View style={{
-      ...styles.container,
-      height: scaleSizeH(HEADER_HEIGHT) + statusBarHeight,
-      paddingTop: statusBarHeight,
-    }}>
-      <View style={styles.left}>
-        <TouchableOpacity style={styles.btn} onPress={openMenu}>
-          <Icon color={theme['c-font']} name="menu" size={18} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.titleBtn} onPress={openMenu}>
-          <Text style={styles.leftTitle} size={18}>{t(id)}</Text>
-        </TouchableOpacity>
-      </View>
-      {headerComponents[id] ?? null}
-
-      {/* <TouchableOpacity style={styles.btn} onPress={openSetting}>
-        <Icon style={{ ...styles.btnText, color: theme['c-font'] }} name="setting" size={styles.btnText.fontSize} />
-      </TouchableOpacity> */}
-    </View>
-  )
+const TAB_HEADER_TITLES: Record<string, string> = {
+  tab_home: 'nav_search',
+  tab_music_hall: 'nav_songlist',
+  tab_my: 'nav_love',
 }
 
+const PAGE_TAB_MAP: Record<string, string> = {
+  nav_search: 'tab_home',
+  nav_songlist: 'tab_music_hall',
+  nav_top: 'tab_music_hall',
+  nav_love: 'tab_my',
+  nav_setting: 'tab_my',
+}
 
-// const RightTitle = () => {
-//   const id = useNavActiveId()
-//   const t = useI18n()
-
-//   return <Text style={styles.rightTitle} size={18}>{t(id)}</Text>
-// }
-const RightHeader = () => {
-  const theme = useTheme()
-  const t = useI18n()
-  const id = useNavActiveId()
-  const statusBarHeight = useStatusbarHeight()
-
-  const openMenu = () => {
-    global.app_event.changeMenuVisible(true)
-  }
-  return (
-    <View style={{
-      ...styles.container,
-      height: scaleSizeH(HEADER_HEIGHT) + statusBarHeight,
-      paddingTop: statusBarHeight,
-    }}>
-      <View style={styles.left}>
-        <TouchableOpacity style={styles.titleBtn} onPress={openMenu}>
-          <Text style={styles.rightTitle} size={18}>{t(id)}</Text>
-        </TouchableOpacity>
-      </View>
-      {headerComponents[id] ?? null}
-      <TouchableOpacity style={styles.btn} onPress={openMenu}>
-        <Icon color={theme['c-font']} name="menu" size={18} />
-      </TouchableOpacity>
-      {/* <TouchableOpacity style={styles.btn} onPress={openSetting}>
-        <Icon style={{ ...styles.btnText, color: theme['c-font'] }} name="setting" size={styles.btnText.fontSize} />
-      </TouchableOpacity> */}
-    </View>
-  )
+const TAB_DISPLAY_NAMES: Record<string, string> = {
+  tab_home: '首页',
+  tab_music_hall: '音乐馆',
+  tab_my: '我的',
 }
 
 const Header = () => {
-  const drawerLayoutPosition = useSettingValue('common.drawerLayoutPosition')
+  const theme = useTheme()
+  const navActiveId = useNavActiveId()
+  const t = useI18n()
+  const statusBarHeight = useStatusbarHeight()
+  const currentTab = PAGE_TAB_MAP[navActiveId] || 'tab_home'
 
   return (
     <>
       <StatusBar />
-      {
-        drawerLayoutPosition == 'left'
-          ? <LeftHeader />
-          : <RightHeader />
-      }
-
+      <View style={{
+        ...styles.container,
+        height: scaleSizeH(HEADER_HEIGHT) + statusBarHeight,
+        paddingTop: statusBarHeight,
+        backgroundColor: theme['c-main-background'],
+      }}>
+        <View style={styles.left}>
+          <View style={{
+            ...styles.logoContainer,
+            backgroundColor: theme['c-primary-alpha-200'],
+          }}>
+            <Icon name="logo" color={theme['c-primary-font']} size={20} />
+          </View>
+          <Text size={18} color={theme['c-font']} style={styles.titleText}>
+            {TAB_DISPLAY_NAMES[currentTab] || t(navActiveId)}
+          </Text>
+        </View>
+        {headerComponents[navActiveId] ?? null}
+      </View>
     </>
   )
 }
 
-
 const styles = createStyle({
   container: {
-    // width: '100%',
     paddingRight: 5,
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    // backgroundColor: 'rgba(0,0,0,0.1)',
     zIndex: 10,
   },
   left: {
     flex: 1,
     flexDirection: 'row',
-    paddingLeft: 5,
+    paddingLeft: 12,
     alignItems: 'center',
     height: '100%',
   },
-  btn: {
-    // flex: 1,
-    width: HEADER_HEIGHT,
-    // backgroundColor: 'rgba(0,0,0,0.1)',
+  logoContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
+    marginRight: 10,
   },
-  titleBtn: {
-    flex: 1,
-    // backgroundColor: 'rgba(0,0,0,0.1)',
-    height: '100%',
-    justifyContent: 'center',
-  },
-  leftTitle: {
-    paddingLeft: 14,
-    paddingRight: 16,
-  },
-  rightTitle: {
-    paddingLeft: 16,
-    paddingRight: 16,
+  titleText: {
+    fontWeight: '600',
   },
 })
 
