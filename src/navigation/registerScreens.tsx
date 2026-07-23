@@ -8,6 +8,7 @@ import {
   SonglistDetail,
   Comment,
   ThemeCenter,
+  MyListDetail,
   // Setting,
 } from '@/screens'
 import { Provider } from '@/store/Provider'
@@ -18,6 +19,7 @@ import {
   SONGLIST_DETAIL_SCREEN,
   COMMENT_SCREEN,
   THEME_CENTER_SCREEN,
+  MY_LIST_DETAIL_SCREEN,
   VERSION_MODAL,
   PACT_MODAL,
   SYNC_MODE_MODAL,
@@ -47,6 +49,7 @@ export default () => {
   Navigation.registerComponent(SONGLIST_DETAIL_SCREEN, () => WrappedComponent(SonglistDetail))
   Navigation.registerComponent(COMMENT_SCREEN, () => WrappedComponent(Comment))
   Navigation.registerComponent(THEME_CENTER_SCREEN, () => WrappedComponent(ThemeCenter))
+  Navigation.registerComponent(MY_LIST_DETAIL_SCREEN, () => WrappedComponent(MyListDetail))
   Navigation.registerComponent(VERSION_MODAL, () => WrappedComponent(VersionModal))
   Navigation.registerComponent(PACT_MODAL, () => WrappedComponent(PactModal))
   Navigation.registerComponent(SYNC_MODE_MODAL, () => WrappedComponent(SyncModeModal))

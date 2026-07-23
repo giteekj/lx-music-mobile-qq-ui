@@ -29,6 +29,7 @@ const dislikeListPrefix = storageDataPrefix.dislikeList
 const userApiPrefix = storageDataPrefix.userApi
 const openStoragePathPrefix = storageDataPrefix.openStoragePath
 const selectedManagedFolderPrefix = storageDataPrefix.selectedManagedFolder
+const playHistoryKey = storageDataPrefix.playHistory
 
 // const defaultListKey = listPrefix + 'default'
 // const loveListKey = listPrefix + 'love'
@@ -428,6 +429,39 @@ export const savePlayInfo = async(playInfo: LX.Player.SavedPlayInfo) => {
 // 获取上次关闭时的当前歌曲播放信息
 export const getPlayInfo = async() => {
   return getData<LX.Player.SavedPlayInfo | null>(playInfoStorageKey)
+}
+
+// ========== Play History ==========
+let playHistoryList: LX.Music.MusicInfoOnline[] | null = null
+const MAX_PLAY_HISTORY = 200
+const savePlayHistoryThrottle = throttle(() => {
+  void saveData(playHistoryKey, playHistoryList)
+}, 1000)
+
+export const getPlayHistory = async(): Promise<LX.Music.MusicInfoOnline[]> => {
+  if (playHistoryList === null) {
+    playHistoryList = (await getData<LX.Music.MusicInfoOnline[]>(playHistoryKey)) ?? []
+  }
+  return [...playHistoryList]
+}
+
+export const addPlayHistory = async(musicInfo: LX.Music.MusicInfo) => {
+  if (playHistoryList === null) await getPlayHistory()
+  const id = musicInfo.id
+  // Remove existing entry with same id
+  playHistoryList = playHistoryList!.filter(m => m.id !== id)
+  // Add to front, limit to MAX
+  const info = { ...musicInfo } as LX.Music.MusicInfoOnline
+  playHistoryList!.unshift(info)
+  if (playHistoryList!.length > MAX_PLAY_HISTORY) {
+    playHistoryList = playHistoryList!.slice(0, MAX_PLAY_HISTORY)
+  }
+  savePlayHistoryThrottle()
+}
+
+export const clearPlayHistory = async() => {
+  playHistoryList = []
+  await saveData(playHistoryKey, [])
 }
 
 let selectedManagedFolder: string | null = ''

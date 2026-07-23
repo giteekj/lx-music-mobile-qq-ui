@@ -25,6 +25,7 @@ export enum COMPONENT_IDS {
   playDetail = 'playDetail',
   songlistDetail = 'songlistDetail',
   comment = 'comment',
+  myListDetail = 'myListDetail',
 }
 
 export enum NAV_SHEAR_NATIVE_IDS {
@@ -78,6 +79,8 @@ export const storageDataPrefix = {
   dislikeList: '@dislike_list',
 
   userApi: '@user_api__',
+
+  playHistory: '@play_history',
 } as const
 
 // v0.x.x 版本的 data keys
@@ -110,6 +113,9 @@ export const NAV_MENUS = [
 export type NAV_ID_Type = typeof NAV_MENUS[number]['id']
 
 export const LXM_FILE_EXT_RXP = ['json', 'lxmc', 'bin']
+export const SCREEN_NAMES = {
+  MY_LIST_DETAIL_SCREEN: 'lxm.MyListDetailScreen',
+} as const
 export const USER_API_SOURCE_FILE_EXT_RXP = ['js']
 
 export const MUSIC_TOGGLE_MODE = {

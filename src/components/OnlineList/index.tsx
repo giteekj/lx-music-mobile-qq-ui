@@ -7,6 +7,7 @@ import ListMusicMultiAdd, { type MusicMultiAddModalType as ListAddMultiType } fr
 import ListMusicAdd, { type MusicAddModalType as ListMusicAddType } from '@/components/MusicAddModal'
 import MultipleModeBar, { type MultipleModeBarType, type SelectMode } from './MultipleModeBar'
 import { handleDislikeMusic, handlePlay, handlePlayLater, handleShare, handleShowMusicSourceDetail } from './listAction'
+import { downloadMusic } from '@/core/download'
 import { createStyle } from '@/utils/tools'
 
 export interface OnlineListProps {
@@ -77,6 +78,23 @@ export default forwardRef<OnlineListType, OnlineListProps>(({
       listMusicAddRef.current?.show({ musicInfo: info.musicInfo, listId: '', isMove: false })
     }
   }
+  const handleMultiAddToPlaylist = () => {
+    const selectedList = listRef.current?.getSelectedList() ?? []
+    if (selectedList.length) {
+      listMusicMultiAddRef.current?.show({ selectedList, listId: '', isMove: false })
+    }
+  }
+  const handleMultiShowMoreActions = (position: { x: number, y: number, w: number, h: number }) => {
+    const selectedList = listRef.current?.getSelectedList() ?? []
+    if (selectedList.length) {
+      listMenuRef.current?.show({
+        musicInfo: selectedList[0],
+        index: 0,
+        single: false,
+        selectedList,
+      }, position)
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -100,6 +118,8 @@ export default forwardRef<OnlineListType, OnlineListProps>(({
           onSwitchMode={hancelSwitchSelectMode}
           onSelectAll={isAll => listRef.current?.selectAll(isAll)}
           onExitSelectMode={hancelExitSelect}
+          onAddToPlaylist={handleMultiAddToPlaylist}
+          onShowMoreActions={handleMultiShowMoreActions}
         />
       </View>
       <ListMusicAdd ref={listMusicAddRef} onAdded={() => { hancelExitSelect() }} />
@@ -108,6 +128,7 @@ export default forwardRef<OnlineListType, OnlineListProps>(({
         ref={listMenuRef}
         onPlay={info => { handlePlay(info.musicInfo) }}
         onPlayLater={info => { hancelExitSelect(); handlePlayLater(info.musicInfo, info.selectedList, hancelExitSelect) }}
+        onDownload={info => { void downloadMusic(info.musicInfo) }}
         onCopyName={info => { handleShare(info.musicInfo) }}
         onAdd={handleAddMusic}
         onMusicSourceDetail={info => { void handleShowMusicSourceDetail(info.musicInfo) }}

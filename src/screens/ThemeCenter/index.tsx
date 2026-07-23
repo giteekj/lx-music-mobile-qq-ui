@@ -1,5 +1,5 @@
-import React, { memo, useCallback, useState } from 'react'
-import { View, ScrollView, TouchableOpacity, Dimensions } from 'react-native'
+import React, { memo, useCallback, useMemo, useState } from 'react'
+import { View, ScrollView, TouchableOpacity, Dimensions, ImageBackground, ImageSourcePropType } from 'react-native'
 import Text from '@/components/common/Text'
 import { useTheme } from '@/store/theme/hook'
 import { createStyle } from '@/utils/tools'
@@ -7,11 +7,14 @@ import themes from '@/theme/themes/themes'
 import { setTheme } from '@/core/theme'
 import { useI18n } from '@/lang'
 import { Icon } from '@/components/common/Icon'
+import BubbleBackground from './BubbleBackground'
+import { BG_IMAGES } from '@/theme/themes/index'
 
 const THEME_WIDTH = (Dimensions.get('window').width - 48) / 2
+const ANIME_THEME_IDS = ['doraemon', 'conan', 'naruto', 'maruko']
 
 const ThemeCard = memo(({ theme, isActive, onPress }: {
-  theme: typeof themes[number]
+  theme: LX.Theme
   isActive: boolean
   onPress: () => void
 }) => {
@@ -40,6 +43,36 @@ const ThemeCard = memo(({ theme, isActive, onPress }: {
   )
 }, (prev, next) => prev.isActive === next.isActive && prev.theme.id === next.theme.id)
 
+const FeaturedThemeCard = memo(({ theme, isActive, onPress }: {
+  theme: LX.Theme
+  isActive: boolean
+  onPress: () => void
+}) => {
+  const bgImage = BG_IMAGES[theme.config.extInfo['bg-image'] as keyof typeof BG_IMAGES] as ImageSourcePropType | undefined
+  const primaryColor = theme.config.themeColors['c-primary']
+
+  return (
+    <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.featuredWrapper}>
+      <ImageBackground
+        source={bgImage}
+        resizeMode="cover"
+        imageStyle={{ borderRadius: 16 }}
+        style={[styles.featuredCard, { borderColor: isActive ? primaryColor : 'transparent' }]}
+      >
+        <View style={styles.featuredOverlay}>
+          <Text size={16} color="#fff" style={styles.featuredName} numberOfLines={1}>{theme.name}</Text>
+          <Text size={11} color="rgba(255,255,255,0.9)" numberOfLines={1}>动漫主题</Text>
+        </View>
+        {isActive && (
+          <View style={[styles.featuredActiveBadge, { backgroundColor: primaryColor }]}>
+            <Icon name="checkbox-marked" color="#fff" rawSize={12} />
+          </View>
+        )}
+      </ImageBackground>
+    </TouchableOpacity>
+  )
+}, (prev, next) => prev.isActive === next.isActive && prev.theme.id === next.theme.id)
+
 export default () => {
   const t = useI18n()
   const theme = useTheme()
@@ -50,20 +83,43 @@ export default () => {
     setTheme(id)
   }, [])
 
+  const { animeThemes, normalThemes } = useMemo(() => {
+    const anime: LX.Theme[] = []
+    const normal: LX.Theme[] = []
+    for (const item of themes as unknown as LX.Theme[]) {
+      if (ANIME_THEME_IDS.includes(item.id)) anime.push(item)
+      else normal.push(item)
+    }
+    return { animeThemes: anime, normalThemes: normal }
+  }, [])
+
   return (
     <View style={{ flex: 1, backgroundColor: theme['c-content-background'] }}>
+      <BubbleBackground />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>{t('theme_center_title') ?? '装扮中心'}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.sectionTitle} size={16} color={theme['c-font']}>动漫主题</Text>
+        <View style={styles.featuredGrid}>
+          {animeThemes.map(item => (
+            <FeaturedThemeCard
+              key={item.id}
+              theme={item}
+              isActive={activeId === item.id}
+              onPress={() => handlePress(item.id)}
+            />
+          ))}
+        </View>
+
         <Text style={styles.sectionTitle} size={16} color={theme['c-font']}>推荐主题</Text>
         <View style={styles.grid}>
-          {themes.map(t => (
+          {normalThemes.map(item => (
             <ThemeCard
-              key={t.id}
-              theme={t}
-              isActive={activeId === t.id}
-              onPress={() => handlePress(t.id)}
+              key={item.id}
+              theme={item}
+              isActive={activeId === item.id}
+              onPress={() => handlePress(item.id)}
             />
           ))}
         </View>
@@ -87,8 +143,50 @@ const styles = createStyle({
     justifyContent: 'center',
   },
   sectionTitle: {
+    marginTop: 8,
     marginBottom: 16,
     fontWeight: '600',
+  },
+  featuredGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  featuredWrapper: {
+    width: THEME_WIDTH,
+    marginBottom: 16,
+  },
+  featuredCard: {
+    height: 120,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 2,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
+  },
+  featuredOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    padding: 12,
+    backgroundColor: 'rgba(0,0,0,0.28)',
+  },
+  featuredName: {
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  featuredActiveBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   grid: {
     flexDirection: 'row',

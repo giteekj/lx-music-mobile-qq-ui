@@ -5,9 +5,10 @@ import { Icon } from '@/components/common/Icon'
 import Text from '@/components/common/Text'
 import { createStyle } from '@/utils/tools'
 import { scaleSizeW } from '@/utils/pixelRatio'
+import type { NAV_ID_Type } from '@/config/constant'
 
 export interface TabItem {
-  id: string
+  id: NAV_ID_Type
   label: string
   icon: string
 }
@@ -22,7 +23,7 @@ export const TAB_ITEMS: TabItem[] = [
 
 interface BottomTabBarProps {
   activeTab: string
-  onTabPress: (tabId: string) => void
+  onTabPress: (tabId: TabItem['id']) => void
 }
 
 export default memo(({ activeTab, onTabPress }: BottomTabBarProps) => {

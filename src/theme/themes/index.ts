@@ -9,9 +9,13 @@ import { type ImageSourcePropType } from 'react-native'
 
 export const BG_IMAGES = {
   'china_ink.jpg': require('./images/china_ink.jpg') as ImageSourcePropType,
+  'conan_bg.png': require('./images/conan_bg.png') as ImageSourcePropType,
+  'doraemon_bg.png': require('./images/doraemon_bg.png') as ImageSourcePropType,
   'jqbg.jpg': require('./images/jqbg.jpg') as ImageSourcePropType,
   'landingMoon.png': require('./images/landingMoon2.png') as ImageSourcePropType,
+  'maruko_bg.png': require('./images/maruko_bg.png') as ImageSourcePropType,
   'myzcbg.jpg': require('./images/myzcbg.jpg') as ImageSourcePropType,
+  'naruto_bg.png': require('./images/naruto_bg.png') as ImageSourcePropType,
   'xnkl.png': require('./images/xnkl.png') as ImageSourcePropType,
 } as const
 

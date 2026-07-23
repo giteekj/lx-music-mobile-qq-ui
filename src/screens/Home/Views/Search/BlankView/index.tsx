@@ -50,7 +50,7 @@ export default forwardRef<BlankViewType, BlankViewProps>(({ onSearch }, ref) => 
   return (
     <ScrollView style={{ flex: 1 }}>
       {/* QQ Music Style Recommendations */}
-      <RecommendView />
+      <RecommendView onSearch={onSearch} />
 
       {/* Original Hot Search & History */}
       {isShowHotSearch || isShowHistorySearch ? (

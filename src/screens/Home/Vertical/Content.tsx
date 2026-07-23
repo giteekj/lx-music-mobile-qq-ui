@@ -12,7 +12,7 @@ const Content = () => {
   const theme = useTheme()
   const navActiveId = useNavActiveId()
 
-  const handleTabPress = useCallback((tabId: string) => {
+  const handleTabPress = useCallback((tabId: Parameters<typeof setNavActiveId>[0]) => {
     setNavActiveId(tabId)
   }, [])
 

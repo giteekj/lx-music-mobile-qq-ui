@@ -1,18 +1,22 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useEffect, useState, useCallback } from 'react'
 import {
-  View, ScrollView, TouchableOpacity, Image,
+  View, ScrollView, TouchableOpacity, Image, FlatList,
 } from 'react-native'
 import Text from '@/components/common/Text'
 import { useTheme } from '@/store/theme/hook'
 import { createStyle } from '@/utils/tools'
 import { Icon } from '@/components/common/Icon'
 import { useI18n } from '@/lang'
-import { pushThemeCenterScreen } from '@/navigation/navigation'
-import { COMPONENT_IDS } from '@/config/constant'
+import { pushThemeCenterScreen, pushMyListDetailScreen } from '@/navigation/navigation'
+import { COMPONENT_IDS, LIST_IDS } from '@/config/constant'
 import { getListMusics } from '@/core/list'
-import { LIST_IDS } from '@/config/constant'
 import { setNavActiveId } from '@/core/common'
 import commonState from '@/store/common/state'
+import { getPlayHistory } from '@/utils/data'
+import { playList } from '@/core/player/player'
+import { setTempList } from '@/core/list'
+import Badge from '@/components/common/Badge'
+import { scaleSizeH } from '@/utils/pixelRatio'
 
 const QuickEntry = memo(({ icon, label, count, onPress, color }: {
   icon: string
@@ -48,30 +52,108 @@ const SectionHeader = memo(({ title, onMore }: { title: string; onMore?: () => v
   )
 })
 
+const RecentSongItem = memo(({ item, index, onPress, theme }: {
+  item: LX.Music.MusicInfo
+  index: number
+  onPress: (item: LX.Music.MusicInfo, index: number) => void
+  theme: any
+}) => (
+  <TouchableOpacity
+    style={[styles.recentSongItem, { backgroundColor: theme['c-primary-light-900-alpha-300'] }]}
+    activeOpacity={0.6}
+    onPress={() => onPress(item, index)}
+  >
+    <View style={styles.recentSongInfo}>
+      <Text size={14} color={theme['c-font']} numberOfLines={1}>{item.name}</Text>
+      <View style={styles.recentSongMeta}>
+        {item.source ? <Badge>{item.source.toUpperCase()}</Badge> : null}
+        <Text size={11} color={theme['c-font-label']} numberOfLines={1} style={{ flexShrink: 1, marginLeft: 4 }}>
+          {item.singer || ''}
+        </Text>
+      </View>
+    </View>
+    <Icon name="play-outline" color={theme['c-primary']} rawSize={28} />
+  </TouchableOpacity>
+))
+
 export default () => {
   const t = useI18n()
   const theme = useTheme()
   const [loveCount, setLoveCount] = useState('0')
+  const [recentSongs, setRecentSongs] = useState<LX.Music.MusicInfo[]>([])
+
+  const updateLoveCount = useCallback(() => {
+    void getListMusics(LIST_IDS.LOVE).then(list => setLoveCount(`${list.length}`))
+  }, [])
+
+  const updateRecentSongs = useCallback(async() => {
+    const history = await getPlayHistory()
+    setRecentSongs(history.slice(0, 5))
+  }, [])
 
   useEffect(() => {
-    const updateLoveCount = () => {
-      void getListMusics(LIST_IDS.LOVE).then(list => setLoveCount(`${list.length}`))
-    }
+    updateLoveCount()
+    updateRecentSongs()
+
     const handleListUpdate = (ids: string[]) => {
       if (ids.includes(LIST_IDS.LOVE)) updateLoveCount()
     }
-    updateLoveCount()
+    const handlePlayHistoryUpdate = () => {
+      void updateRecentSongs()
+    }
+
     global.app_event.on('myListMusicUpdate', handleListUpdate)
-    return () => global.app_event.off('myListMusicUpdate', handleListUpdate)
-  }, [])
+    global.app_event.on('playHistoryUpdate', handlePlayHistoryUpdate)
+    return () => {
+      global.app_event.off('myListMusicUpdate', handleListUpdate)
+      global.app_event.off('playHistoryUpdate', handlePlayHistoryUpdate)
+    }
+  }, [updateLoveCount, updateRecentSongs])
 
   const handleOpenSettings = () => {
     setNavActiveId('nav_setting')
   }
 
   const handleOpenThemeCenter = () => {
-    pushThemeCenterScreen(commonState.componentIds[COMPONENT_IDS.home])
+    const id = commonState.componentIds[COMPONENT_IDS.home]
+    if (id) pushThemeCenterScreen(id)
   }
+
+  const handleOpenLove = () => {
+    const id = commonState.componentIds[COMPONENT_IDS.home]
+    if (id) pushMyListDetailScreen(id, {
+      listId: LIST_IDS.LOVE,
+      title: '我的收藏',
+      mode: 'list',
+    })
+  }
+
+  const handleOpenHistory = () => {
+    const id = commonState.componentIds[COMPONENT_IDS.home]
+    if (id) pushMyListDetailScreen(id, {
+      title: '最近播放',
+      mode: 'history',
+    })
+  }
+
+  const handleOpenLocal = () => {
+    const id = commonState.componentIds[COMPONENT_IDS.home]
+    if (id) pushMyListDetailScreen(id, {
+      listId: LIST_IDS.DEFAULT,
+      title: '试听列表',
+      mode: 'list',
+    })
+  }
+
+  const handleOpenSonglist = () => {
+    setNavActiveId('nav_songlist')
+  }
+
+  const handlePlayRecent = useCallback((item: LX.Music.MusicInfo, index: number) => {
+    void setTempList('playHistory', recentSongs as LX.Music.MusicInfoOnline[]).then(() => {
+      void playList(LIST_IDS.TEMP, index)
+    })
+  }, [recentSongs])
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme['c-content-background'] }}>
@@ -94,10 +176,10 @@ export default () => {
       {/* Quick Entries */}
       <View style={[styles.entriesCard, { backgroundColor: theme['c-primary-light-1000'] }]}>
         <View style={styles.entriesRow}>
-          <QuickEntry icon="love" label="收藏" count={loveCount} color="#ff6b6b" />
-          <QuickEntry icon="download-2" label="本地" color="#4ecdc4" />
-          <QuickEntry icon="comment" label="有声" color="#45b7d1" />
-          <QuickEntry icon="music_time" label="最近" color="#f7b731" />
+          <QuickEntry icon="love" label="收藏" count={loveCount} color="#ff6b6b" onPress={handleOpenLove} />
+          <QuickEntry icon="album" label="试听" color="#4ecdc4" onPress={handleOpenLocal} />
+          <QuickEntry icon="list-order" label="歌单" color="#45b7d1" onPress={handleOpenSonglist} />
+          <QuickEntry icon="music_time" label="最近" color="#f7b731" onPress={handleOpenHistory} />
         </View>
       </View>
 
@@ -122,11 +204,26 @@ export default () => {
 
       {/* Recent Play */}
       <View style={[styles.menuCard, { backgroundColor: theme['c-primary-light-1000'] }]}>
-        <SectionHeader title="最近播放" />
-        <View style={styles.emptyRecent}>
-          <Icon name="music_time" color={theme['c-font-label']} rawSize={40} />
-          <Text size={14} color={theme['c-font-label']} style={{ marginTop: 8 }}>暂无最近播放记录</Text>
-        </View>
+        <SectionHeader title="最近播放" onMore={recentSongs.length > 0 ? handleOpenHistory : undefined} />
+        {recentSongs.length === 0 ? (
+          <View style={styles.emptyRecent}>
+            <Icon name="music_time" color={theme['c-font-label']} rawSize={40} />
+            <Text size={14} color={theme['c-font-label']} style={{ marginTop: 8 }}>暂无播放记录</Text>
+            <Text size={12} color={theme['c-font-label']} style={{ marginTop: 4 }}>播放歌曲后会自动记录</Text>
+          </View>
+        ) : (
+          <View style={styles.recentList}>
+            {recentSongs.map((item, index) => (
+              <RecentSongItem
+                key={`${item.id}_${index}`}
+                item={item}
+                index={index}
+                onPress={handlePlayRecent}
+                theme={theme}
+              />
+            ))}
+          </View>
+        )}
       </View>
     </ScrollView>
   )
@@ -250,5 +347,26 @@ const styles = createStyle({
   emptyRecent: {
     alignItems: 'center',
     paddingVertical: 30,
+  },
+  recentList: {
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+  },
+  recentSongItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginBottom: 6,
+  },
+  recentSongInfo: {
+    flex: 1,
+    marginRight: 8,
+  },
+  recentSongMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 3,
   },
 })

@@ -28,6 +28,7 @@ import { checkIgnoringBatteryOptimization, checkNotificationPermission, debounce
 import { LIST_IDS } from '@/config/constant'
 import { addListMusics, removeListMusics } from '@/core/list'
 import { addDislikeInfo } from '@/core/dislikeList'
+import { addPlayHistory } from '@/utils/data'
 
 // import { checkMusicFileAvailable } from '@renderer/utils/music'
 
@@ -261,6 +262,11 @@ const handlePlay = async() => {
 
 
   if (settingState.setting['player.togglePlayMethod'] == 'random' && !playMusicInfo.isTempPlay) addPlayedList(playMusicInfo as LX.Player.PlayMusicInfo)
+
+  // Record play history
+  void addPlayHistory(musicInfo as LX.Music.MusicInfoOnline).then(() => {
+    global.app_event.playHistoryUpdate()
+  })
 
   debouncePlay(musicInfo)
 }

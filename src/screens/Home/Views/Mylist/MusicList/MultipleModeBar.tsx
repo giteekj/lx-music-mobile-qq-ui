@@ -3,6 +3,7 @@ import { Animated, View, TouchableOpacity } from 'react-native'
 
 import Text from '@/components/common/Text'
 import Button from '@/components/common/Button'
+import { Icon } from '@/components/common/Icon'
 import { useTheme } from '@/store/theme/hook'
 import { createStyle } from '@/utils/tools'
 import { BorderWidths } from '@/theme'
@@ -13,6 +14,8 @@ export interface MultipleModeBarProps {
   onSwitchMode: (mode: SelectMode) => void
   onSelectAll: (isAll: boolean) => void
   onExitSelectMode: () => void
+  onAddToPlaylist?: () => void
+  onShowMoreActions?: (position: { x: number, y: number, w: number, h: number }) => void
 }
 export interface MultipleModeBarType {
   show: () => void
@@ -23,7 +26,7 @@ export interface MultipleModeBarType {
   exitSelectMode: () => void
 }
 
-export default forwardRef<MultipleModeBarType, MultipleModeBarProps>(({ onSelectAll, onSwitchMode, onExitSelectMode }, ref) => {
+export default forwardRef<MultipleModeBarType, MultipleModeBarProps>(({ onSelectAll, onSwitchMode, onExitSelectMode, onAddToPlaylist, onShowMoreActions }, ref) => {
   // const isGetDetailFailedRef = useRef(false)
   const [visible, setVisible] = useState(false)
   const [animatePlayed, setAnimatPlayed] = useState(true)
@@ -34,6 +37,14 @@ export default forwardRef<MultipleModeBarType, MultipleModeBarProps>(({ onSelect
   const [selectedCount, setSelectedCount] = useState(0)
   const [visibleBar, setVisibleBar] = useState(true)
   const theme = useTheme()
+  const moreActionsRef = useRef<TouchableOpacity>(null)
+
+  const handleShowMoreActions = useCallback(() => {
+    if (!onShowMoreActions || !moreActionsRef.current?.measure) return
+    moreActionsRef.current.measure((fx, fy, width, height, px, py) => {
+      onShowMoreActions({ x: Math.ceil(px), y: Math.ceil(py), w: Math.ceil(width), h: Math.ceil(height) })
+    })
+  }, [onShowMoreActions])
 
   useImperativeHandle(ref, () => ({
     show() {
@@ -134,12 +145,22 @@ export default forwardRef<MultipleModeBarType, MultipleModeBarProps>(({ onSelect
         <TouchableOpacity onPress={handleSelectAll} style={styles.btn}>
           <Text color={theme['c-button-font']}>{global.i18n.t(isSelectAll ? 'list_select_unall' : 'list_select_all')}</Text>
         </TouchableOpacity>
+        {onAddToPlaylist && (
+          <TouchableOpacity onPress={onAddToPlaylist} style={styles.actionBtn} disabled={selectedCount === 0}>
+            <Icon name="add-music" size={18} color={selectedCount > 0 ? theme['c-button-font'] : theme['c-350']} />
+          </TouchableOpacity>
+        )}
+        {onShowMoreActions && (
+          <TouchableOpacity ref={moreActionsRef} onPress={handleShowMoreActions} style={styles.actionBtn} disabled={selectedCount === 0}>
+            <Icon name="dots-vertical" size={16} color={selectedCount > 0 ? theme['c-button-font'] : theme['c-350']} />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity onPress={onExitSelectMode} style={styles.btn}>
           <Text color={theme['c-button-font']}>{global.i18n.t('list_select_cancel')}</Text>
         </TouchableOpacity>
       </Animated.View>
     )
-  }, [animaStyle, selectMode, theme, handleSelectAll, isSelectAll, selectedCount, onExitSelectMode, onSwitchMode])
+  }, [animaStyle, selectMode, theme, handleSelectAll, isSelectAll, selectedCount, onExitSelectMode, onSwitchMode, onAddToPlaylist, onShowMoreActions, handleShowMoreActions])
 
   return !visible && animatePlayed ? null : component
 })
@@ -167,6 +188,12 @@ const styles = createStyle({
   btn: {
     paddingLeft: 14,
     paddingRight: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionBtn: {
+    width: 40,
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
   },

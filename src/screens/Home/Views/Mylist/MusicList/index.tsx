@@ -3,6 +3,7 @@ import { useCallback, useRef } from 'react'
 import listState from '@/store/list/state'
 import ListMenu, { type ListMenuType, type Position, type SelectInfo } from './ListMenu'
 import { handleDislikeMusic, handlePlay, handlePlayLater, handleRemove, handleShare, handleShowMusicSourceDetail, handleUpdateMusicInfo, handleUpdateMusicPosition } from './listAction'
+import { downloadMusic } from '@/core/download'
 import List, { type ListType } from './List'
 import ListMusicAdd, { type MusicAddModalType as ListMusicAddType } from '@/components/MusicAddModal'
 import ListMusicMultiAdd, { type MusicMultiAddModalType as ListAddMultiType } from '@/components/MusicMultiAddModal'
@@ -101,6 +102,24 @@ export default () => {
       listMusicAddRef.current?.show({ musicInfo: info.musicInfo, listId: info.listId, isMove: false })
     }
   }, [])
+  const handleMultiAddToPlaylist = useCallback(() => {
+    const selectedList = listRef.current?.getSelectedList() ?? []
+    if (selectedList.length) {
+      listMusicMultiAddRef.current?.show({ selectedList, listId: listState.activeListId, isMove: false })
+    }
+  }, [])
+  const handleMultiShowMoreActions = useCallback((position: Position) => {
+    const selectedList = listRef.current?.getSelectedList() ?? []
+    if (selectedList.length) {
+      listMenuRef.current?.show({
+        musicInfo: selectedList[0],
+        index: 0,
+        listId: listState.activeListId,
+        single: false,
+        selectedList,
+      }, position)
+    }
+  }, [])
   const handleMoveMusic = useCallback((info: SelectInfo) => {
     if (info.selectedList.length) {
       listMusicMultiAddRef.current?.show({ selectedList: info.selectedList, listId: info.listId, isMove: true })
@@ -128,6 +147,8 @@ export default () => {
           onSwitchMode={hancelSwitchSelectMode}
           onSelectAll={isAll => listRef.current?.selectAll(isAll)}
           onExitSelectMode={hancelExitSelect}
+          onAddToPlaylist={handleMultiAddToPlaylist}
+          onShowMoreActions={handleMultiShowMoreActions}
         />
         <ListSearchBar
           ref={listSearchBarRef}
@@ -156,6 +177,7 @@ export default () => {
         ref={listMenuRef}
         onPlay={info => { handlePlay(info.listId, info.index) }}
         onPlayLater={info => { hancelExitSelect(); handlePlayLater(info.listId, info.musicInfo, info.selectedList, hancelExitSelect) }}
+        onDownload={info => { void downloadMusic(info.musicInfo as LX.Music.MusicInfoOnline) }}
         onRemove={info => { hancelExitSelect(); handleRemove(info.listId, info.musicInfo, info.selectedList, hancelExitSelect) }}
         onDislikeMusic={info => { void handleDislikeMusic(info.musicInfo) }}
         onCopyName={info => { handleShare(info.musicInfo) }}

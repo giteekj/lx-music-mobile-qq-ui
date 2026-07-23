@@ -153,6 +153,11 @@ export class AppEvent extends Event {
     this.emit('downloadListUpdate')
   }
 
+  // 播放历史更新事件
+  playHistoryUpdate() {
+    this.emit('playHistoryUpdate')
+  }
+
   // 列表里的音乐信息改变事件
   musicInfoUpdate(musicInfo: LX.Music.MusicInfo) {
     this.emit('musicInfoUpdate', musicInfo)

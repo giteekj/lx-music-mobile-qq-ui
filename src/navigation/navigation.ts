@@ -7,6 +7,7 @@ import {
   SONGLIST_DETAIL_SCREEN,
   COMMENT_SCREEN,
   THEME_CENTER_SCREEN,
+  MY_LIST_DETAIL_SCREEN,
   // SETTING_SCREEN,
 } from './screenNames'
 
@@ -310,6 +311,49 @@ export function pushThemeCenterScreen(componentId: string) {
     void Navigation.push(componentId, {
       component: {
         name: THEME_CENTER_SCREEN,
+        options: {
+          topBar: { visible: false, height: 0, drawBehind: false },
+          statusBar: {
+            drawBehind: true,
+            visible: true,
+            style: getStatusBarStyle(theme.isDark),
+            backgroundColor: 'transparent',
+          },
+          navigationBar: { backgroundColor: theme['c-content-background'] },
+          layout: { componentBackgroundColor: theme['c-content-background'] },
+          animations: {
+            push: {
+              content: {
+                translationX: { from: windowSizeTools.getSize().width, to: 0, duration: 300 },
+              },
+            },
+            pop: {
+              content: {
+                translationX: { from: 0, to: windowSizeTools.getSize().width, duration: 300 },
+              },
+            },
+          },
+        },
+      },
+    })
+  })
+}
+
+export function pushMyListDetailScreen(componentId: string, opts: {
+  listId?: string
+  title?: string
+  mode?: 'list' | 'history'
+}) {
+  requestAnimationFrame(() => {
+    const theme = themeState.theme
+    void Navigation.push(componentId, {
+      component: {
+        name: MY_LIST_DETAIL_SCREEN,
+        passProps: {
+          listId: opts.listId,
+          title: opts.title,
+          mode: opts.mode || 'list',
+        },
         options: {
           topBar: { visible: false, height: 0, drawBehind: false },
           statusBar: {
