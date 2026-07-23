@@ -9,13 +9,13 @@ import { type ImageSourcePropType } from 'react-native'
 
 export const BG_IMAGES = {
   'china_ink.jpg': require('./images/china_ink.jpg') as ImageSourcePropType,
-  'conan_bg.png': require('./images/conan_bg.png') as ImageSourcePropType,
-  'doraemon_bg.png': require('./images/doraemon_bg.png') as ImageSourcePropType,
+  'anime_sky_sea.png': require('./images/anime_sky_sea.png') as ImageSourcePropType,
+  'anime_sunset_beach.png': require('./images/anime_sunset_beach.png') as ImageSourcePropType,
+  'anime_starry_night.png': require('./images/anime_starry_night.png') as ImageSourcePropType,
+  'anime_sakura.png': require('./images/anime_sakura.png') as ImageSourcePropType,
   'jqbg.jpg': require('./images/jqbg.jpg') as ImageSourcePropType,
   'landingMoon.png': require('./images/landingMoon2.png') as ImageSourcePropType,
-  'maruko_bg.png': require('./images/maruko_bg.png') as ImageSourcePropType,
   'myzcbg.jpg': require('./images/myzcbg.jpg') as ImageSourcePropType,
-  'naruto_bg.png': require('./images/naruto_bg.png') as ImageSourcePropType,
   'xnkl.png': require('./images/xnkl.png') as ImageSourcePropType,
 } as const
 
@@ -124,7 +124,7 @@ export const getTheme = async() => {
   let themeId = settingState.setting['common.isAutoTheme'] && shouldUseDarkColors
     ? 'black'
     : settingState.setting['theme.id']
-  // themeId = 'naruto'
+  // themeId = 'anime_sky'
   // themeId = 'pink'
   // themeId = 'black'
   let theme: LocalTheme | LX.Theme | undefined = themes.find(theme => theme.id == themeId)

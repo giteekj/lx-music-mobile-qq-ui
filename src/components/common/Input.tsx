@@ -11,15 +11,20 @@ const styles = createStyle({
     flexGrow: 1,
     flexShrink: 1,
     alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
   },
   contentBg: {
-    borderRadius: 20,
+    borderRadius: 22,
   },
   input: {
-    borderRadius: 20,
+    borderRadius: 22,
     paddingTop: 0,
     paddingBottom: 0,
-    height: 36,
+    height: 38,
     paddingLeft: 14,
     paddingRight: 0,
     flexGrow: 1,
@@ -106,9 +111,9 @@ export default forwardRef<InputType, InputProps>(({ onChangeText, onClearText, c
   }, [onChangeText])
 
   return (
-    <View style={[styles.content, { backgroundColor: theme['c-primary-light-800-alpha-300'] }, styles.contentBg]}>
-      <View style={{ paddingLeft: 12 }}>
-        <Icon name="search-2" color={theme['c-primary-dark-100-alpha-400']} size={14} />
+    <View style={[styles.content, { backgroundColor: theme['c-primary-light-900-alpha-200'] }, styles.contentBg]}>
+      <View style={{ paddingLeft: 13 }}>
+        <Icon name="search-2" color={theme['c-primary-alpha-400']} size={15} />
       </View>
       <TextInput
         autoCapitalize="none"

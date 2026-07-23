@@ -18,6 +18,8 @@ const RECOMMEND_KEYWORDS = [
 const SONGLIST_KEYWORDS = [
   '华语', '经典', '流行', '校园', '青春',
   '老歌', '新歌', '热歌', '抖音', '车载',
+  '治愈', '晚安', '运动', '咖啡馆', '旅行',
+  '古风', '粤语', '欧美', '日韩', '纯音乐',
 ]
 
 const hashString = (str: string) => {
@@ -32,6 +34,11 @@ const hashString = (str: string) => {
 const getDailySeed = () => {
   const now = new Date()
   return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`
+}
+
+const getHourlySeed = () => {
+  const now = new Date()
+  return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}-${now.getHours()}`
 }
 
 const seededShuffle = <T,>(list: T[], seed: string) => {
@@ -72,10 +79,12 @@ export const getForYouSongs = async (limit = 20): Promise<LX.Music.MusicInfoOnli
 }
 
 export const getRecommendSonglists = async (limit = 6): Promise<ListInfoItem[]> => {
-  const keyword = SONGLIST_KEYWORDS[Math.floor(Math.random() * SONGLIST_KEYWORDS.length)]
+  const seed = getHourlySeed()
+  const keywordIndex = hashString(seed) % SONGLIST_KEYWORDS.length
+  const keyword = SONGLIST_KEYWORDS[keywordIndex]
   try {
     const result = await musicSdk[RECOMMEND_SOURCE].songList.search(keyword, 1, Math.max(limit, 12))
-    return result.list.slice(0, limit)
+    return seededShuffle(result.list as ListInfoItem[], seed).slice(0, limit)
   } catch (e) {
     console.log(e)
     return []

@@ -21,17 +21,17 @@ export default memo(({ isHome = false }: { isHome?: boolean }) => {
   const autoHidePlayBar = useSettingValue('common.autoHidePlayBar')
 
   const playerComponent = useMemo(() => (
-    <View style={{ ...styles.container, backgroundColor: theme['c-main-background'] }}>
-      {/* 顶部细线 */}
-      <View style={[styles.topLine, { backgroundColor: theme['c-primary-alpha-200'] }]} />
-      <View style={styles.content}>
-        <Pic isHome={isHome} />
-        <TouchableOpacity style={styles.center} activeOpacity={0.7} onPress={togglePlay}>
-          <Title isHome={isHome} />
-          <PlayInfo isHome={isHome} />
-        </TouchableOpacity>
-        <View style={styles.right}>
-          <ControlBtn />
+    <View style={styles.wrapper}>
+      <View style={{ ...styles.container, backgroundColor: theme['c-main-background'] }}>
+        <View style={styles.content}>
+          <Pic isHome={isHome} />
+          <TouchableOpacity style={styles.center} activeOpacity={0.7} onPress={togglePlay}>
+            <Title isHome={isHome} />
+            <PlayInfo isHome={isHome} />
+          </TouchableOpacity>
+          <View style={styles.right}>
+            <ControlBtn />
+          </View>
         </View>
       </View>
     </View>
@@ -41,22 +41,23 @@ export default memo(({ isHome = false }: { isHome?: boolean }) => {
 })
 
 const styles = createStyle({
+  wrapper: {
+    paddingHorizontal: scaleSizeW(10),
+    paddingBottom: scaleSizeW(6),
+    paddingTop: scaleSizeW(2),
+  },
   container: {
     width: '100%',
-    paddingHorizontal: scaleSizeW(8),
-    paddingVertical: scaleSizeW(6),
-    elevation: 10,
+    borderRadius: scaleSizeW(16),
+    paddingHorizontal: scaleSizeW(10),
+    paddingVertical: scaleSizeW(7),
+    elevation: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-  },
-  topLine: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: StyleSheet.hairlineWidth,
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(128, 128, 128, 0.12)',
   },
   content: {
     flexDirection: 'row',

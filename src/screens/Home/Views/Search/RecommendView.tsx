@@ -1,5 +1,5 @@
-import React, { memo, useCallback, useEffect, useState } from 'react'
-import { View, TouchableOpacity, ScrollView, ImageBackground, ActivityIndicator } from 'react-native'
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { View, TouchableOpacity, ScrollView, ImageBackground, ActivityIndicator, AppState } from 'react-native'
 import Text from '@/components/common/Text'
 import { useTheme } from '@/store/theme/hook'
 import { createStyle } from '@/utils/tools'
@@ -73,19 +73,46 @@ export default ({ onSearch }: RecommendViewProps) => {
   const [songlists, setSonglists] = useState<ListInfoItem[]>([])
   const [loading, setLoading] = useState(false)
   const theme = useTheme()
+  const hourRef = useRef(new Date().getHours())
 
-  useEffect(() => {
-    let isMounted = true
+  const loadSonglists = useCallback(() => {
     setLoading(true)
     void getRecommendSonglists(6).then(list => {
-      if (!isMounted) return
       setSonglists(list)
       setLoading(false)
     }).catch(() => {
-      if (isMounted) setLoading(false)
+      setLoading(false)
     })
-    return () => { isMounted = false }
   }, [])
+
+  useEffect(() => {
+    loadSonglists()
+
+    // 每小时滚动更新推荐歌单
+    const interval = setInterval(() => {
+      const currentHour = new Date().getHours()
+      if (currentHour !== hourRef.current) {
+        hourRef.current = currentHour
+        loadSonglists()
+      }
+    }, 60 * 1000)
+
+    // App回到前台时检查是否需要更新
+    const sub = AppState.addEventListener('change', state => {
+      if (state === 'active') {
+        const currentHour = new Date().getHours()
+        if (currentHour !== hourRef.current) {
+          hourRef.current = currentHour
+          loadSonglists()
+        }
+      }
+    })
+
+    return () => {
+      clearInterval(interval)
+      sub.remove()
+    }
+  }, [loadSonglists])
 
   const handleTagPress = useCallback((tag: string) => {
     onSearch(tag)

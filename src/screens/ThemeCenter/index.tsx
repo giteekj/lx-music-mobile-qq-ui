@@ -11,7 +11,7 @@ import BubbleBackground from './BubbleBackground'
 import { BG_IMAGES } from '@/theme/themes/index'
 
 const THEME_WIDTH = (Dimensions.get('window').width - 48) / 2
-const ANIME_THEME_IDS = ['doraemon', 'conan', 'naruto', 'maruko']
+const ANIME_THEME_IDS = ['anime_sky', 'anime_sunset', 'anime_starry', 'anime_sakura']
 
 const ThemeCard = memo(({ theme, isActive, onPress }: {
   theme: LX.Theme

@@ -9,13 +9,13 @@ import Image from '@/components/common/Image'
 import { useCallback } from 'react'
 import { setLoadErrorPicUrl, setMusicInfo } from '@/core/player/playInfo'
 
-const PIC_SIZE = scaleSizeW(48)
+const PIC_SIZE = scaleSizeW(46)
 
 const styles = StyleSheet.create({
   image: {
     width: PIC_SIZE,
     height: PIC_SIZE,
-    borderRadius: 8,
+    borderRadius: PIC_SIZE / 2,
     borderWidth: 0,
   },
 })

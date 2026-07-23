@@ -14,8 +14,11 @@ export default ({ title, children }: Props) => {
   const theme = useTheme()
 
   return (
-    <View style={styles.container}>
-      <Text style={{ ...styles.title, borderLeftColor: theme['c-primary'] }} size={16} >{title}</Text>
+    <View style={{ ...styles.container, backgroundColor: theme['c-primary-light-900-alpha-200'] }}>
+      <View style={styles.titleRow}>
+        <View style={{ ...styles.titleIndicator, backgroundColor: theme['c-primary'] }} />
+        <Text style={styles.title} size={16} >{title}</Text>
+      </View>
       <View>
         {children}
       </View>
@@ -26,13 +29,25 @@ export default ({ title, children }: Props) => {
 
 const styles = createStyle({
   container: {
-    // paddingLeft: 10,
-    // backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 14,
+    paddingTop: 14,
+    paddingBottom: 6,
+    marginBottom: 14,
+    overflow: 'hidden',
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingLeft: 14,
+  },
+  titleIndicator: {
+    width: 4,
+    height: 16,
+    borderRadius: 2,
+    marginRight: 8,
   },
   title: {
-    borderLeftWidth: 5,
-    paddingLeft: 12,
-    marginBottom: 10,
-    // lineHeight: 16,
+    fontWeight: '600',
   },
 })
