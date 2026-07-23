@@ -5,7 +5,6 @@ import { useTheme } from '@/store/theme/hook'
 import { createStyle } from '@/utils/tools'
 import themes from '@/theme/themes/themes'
 import { setTheme } from '@/core/theme'
-import Header from '@/components/common/Header'
 import { useI18n } from '@/lang'
 import { Icon } from '@/components/common/Icon'
 
@@ -53,9 +52,9 @@ export default () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: theme['c-content-background'] }}>
-      <Header>
+      <View style={styles.header}>
         <Text style={styles.headerTitle}>{t('theme_center_title') ?? '装扮中心'}</Text>
-      </Header>
+      </View>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.sectionTitle} size={16} color={theme['c-font']}>推荐主题</Text>
         <View style={styles.grid}>
@@ -81,6 +80,11 @@ const styles = createStyle({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  header: {
+    height: 56,
+    paddingHorizontal: 16,
+    justifyContent: 'center',
   },
   sectionTitle: {
     marginBottom: 16,
