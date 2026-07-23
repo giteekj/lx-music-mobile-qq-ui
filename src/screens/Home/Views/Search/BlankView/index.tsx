@@ -1,4 +1,5 @@
 import Text from '@/components/common/Text'
+import { Icon } from '@/components/common/Icon'
 import { useI18n } from '@/lang'
 import { useSettingValue } from '@/store/setting/hook'
 import { useTheme } from '@/store/theme/hook'
@@ -57,7 +58,11 @@ export default forwardRef<BlankViewType, BlankViewProps>(({ onSearch }, ref) => 
           )
         : (
             <View style={styles.welcome}>
-              <Text size={22} color={theme['c-font-label']}>{t('search__welcome')}</Text>
+              <View style={[styles.welcomeIcon, { backgroundColor: theme['c-primary-alpha-100'] }]}>
+                <Icon name="logo" size={40} color={theme['c-primary-font']} />
+              </View>
+              <Text size={24} color={theme['c-font']} style={styles.welcomeTitle}>LX Music</Text>
+              <Text size={14} color={theme['c-font-label']}>{t('search__welcome')}</Text>
             </View>
           )
       : null
@@ -77,5 +82,17 @@ const styles = createStyle({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  welcomeIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  welcomeTitle: {
+    fontWeight: '600',
+    marginBottom: 8,
   },
 })
