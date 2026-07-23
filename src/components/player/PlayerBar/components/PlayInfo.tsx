@@ -13,15 +13,14 @@ import { scaleSizeH, scaleSizeW, scaleSizeWR } from '@/utils/pixelRatio'
 import { useBufferProgress } from '@/plugins/player'
 import { useSettingValue } from '@/store/setting/hook'
 
-const FONT_SIZE = 13
-const PADDING_TOP_RAW = 1.8
+const FONT_SIZE = 11
+const PADDING_TOP_RAW = 1.2
 const PADDING_TOP = Math.round(scaleSizeWR(PADDING_TOP_RAW))
-const MARGIN_TOP = Math.round(scaleSizeH(2))
+const MARGIN_TOP = Math.round(scaleSizeH(1))
 const PADDING_TOP_PROGRESS = PADDING_TOP + MARGIN_TOP
 
 const PlayTimeCurrent = ({ timeStr }: { timeStr: string }) => {
   const theme = useTheme()
-  // console.log(timeStr)
   return <Text size={FONT_SIZE} color={theme['c-500']}>{timeStr}</Text>
 }
 
@@ -43,14 +42,8 @@ export default ({ isHome }: { isHome: boolean }) => {
 
   return (
     <View style={stylesRaw.container}>
-      {/* <MusicName /> */}
-      <View style={styles.status}>
+      <View style={styles.leftContent}>
         <Status autoUpdate={autoUpdate} />
-      </View>
-      <View style={{ flexGrow: 0, flexShrink: 0, flexDirection: 'row', alignItems: 'flex-start' }} >
-        <PlayTimeCurrent timeStr={nowPlayTimeStr} />
-        <Text size={FONT_SIZE} color={theme['c-500']}> / </Text>
-        <PlayTimeMax timeStr={maxPlayTimeStr} />
       </View>
       <View style={[StyleSheet.absoluteFill, stylesRaw.progress]}>
         {
@@ -63,51 +56,26 @@ export default ({ isHome }: { isHome: boolean }) => {
   )
 }
 
-
 const styles = createStyle({
-  // container: {
-  //   // height: 16,
-  //   maxHeight: 32,
-  //   flexGrow: 1,
-  //   flexShrink: 0,
-  //   // flexDirection: 'column',
-  //   // justifyContent: 'center',
-  //   // alignItems: 'center',
-  //   // marginBottom: -1,
-  //   // backgroundColor: '#ccc',
-  //   // overflow: 'hidden',
-  //   // height:
-  //   // position: 'absolute',
-  //   // width: '100%',
-  //   // top: 0,
-  //   paddingTop: PADDING_TOP_RAW,
-  //   paddingHorizontal: 3,
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  //   justifyContent: 'space-between',
-  // },
-  status: {
+  leftContent: {
     flexGrow: 1,
     flexShrink: 1,
     paddingRight: 5,
-    // backgroundColor: '#ccc',
   },
 })
 
 const stylesRaw = StyleSheet.create({
   container: {
-    // height: 16,
-    maxHeight: scaleSizeH(32),
+    maxHeight: scaleSizeH(24),
     flexGrow: 1,
     flexShrink: 0,
     paddingTop: PADDING_TOP,
-    paddingHorizontal: scaleSizeW(3),
+    paddingHorizontal: scaleSizeW(2),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   progress: {
-    // paddingVertical: 2,
     marginBottom: MARGIN_TOP,
     zIndex: 100,
   },
