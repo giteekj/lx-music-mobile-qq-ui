@@ -6,6 +6,24 @@ const { createThemeColors } = require('./utils')
 
 const defaultThemes = [
   {
+    id: 'qq_music',
+    name: 'QQ音乐',
+    isDark: true,
+    config: {
+      primary: 'rgb(49, 194, 124)',
+      font: 'rgb(255, 255, 255)',
+      'c-app-background': 'rgba(0, 0, 0, 0.95)',
+      'c-main-background': 'rgba(18, 18, 18, 0.98)',
+      'bg-image': '',
+      'bg-image-position': 'center',
+      'bg-image-size': 'cover',
+
+      'c-badge-primary': 'var(c-primary)',
+      'c-badge-secondary': '#4baed5',
+      'c-badge-tertiary': '#e7aa36',
+    },
+  },
+  {
     id: 'green',
     name: '绿意盎然',
     isDark: false,
