@@ -8,26 +8,22 @@ import { setSpText } from '@/utils/pixelRatio'
 const styles = createStyle({
   content: {
     flexDirection: 'row',
-    // backgroundColor: 'rgba(0,0,0,0.1)',
     flexGrow: 1,
     flexShrink: 1,
-    // height: 38,
     alignItems: 'center',
-    // paddingRight: 5,
+  },
+  contentBg: {
+    borderRadius: 20,
   },
   input: {
-    // backgroundColor: 'rgba(0,0,0,0.1)',
-    // backgroundColor: 'white',
-    borderRadius: 2,
+    borderRadius: 20,
     paddingTop: 0,
     paddingBottom: 0,
-    height: 32,
-    paddingLeft: 5,
+    height: 36,
+    paddingLeft: 14,
     paddingRight: 0,
     flexGrow: 1,
     flexShrink: 1,
-    // height: '100%',
-    // width: '100%',
     fontSize: 14,
   },
   clearBtnContent: {
@@ -110,7 +106,10 @@ export default forwardRef<InputType, InputProps>(({ onChangeText, onClearText, c
   }, [onChangeText])
 
   return (
-    <View style={styles.content}>
+    <View style={[styles.content, { backgroundColor: theme['c-primary-light-800-alpha-300'] }, styles.contentBg]}>
+      <View style={{ paddingLeft: 12 }}>
+        <Icon name="search-2" color={theme['c-primary-dark-100-alpha-400']} size={14} />
+      </View>
       <TextInput
         autoCapitalize="none"
         onChangeText={changeText}
