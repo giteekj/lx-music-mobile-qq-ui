@@ -5,7 +5,7 @@ import BackgroundTimer from 'react-native-background-timer'
 import { fetchData } from './request'
 import { getUserApiList } from '@/utils/data'
 import { confirmDialog, openUrl, tipDialog } from '@/utils/tools'
-import yehuaScript from '@/resources/scripts/yehua-source'
+const yehuaScript = require('@/resources/scripts/yehua-source.json').script as string
 
 
 export default async(setting: LX.AppSetting) => {
@@ -257,11 +257,13 @@ export default async(setting: LX.AppSetting) => {
   setUserApiList(list)
 
   // Auto-import built-in Yehua source if not present
-  if (!list.some(api => api.name.includes('野花'))) {
+  if (!list.some(api => api?.name?.includes('野花'))) {
     try {
       const info = await importUserApi(yehuaScript)
       // Store the auto-imported source ID so init/index.ts can auto-select it
-      global.lx.autoImportedYehuaId = info.id
+      if (info && info.id) {
+        global.lx.autoImportedYehuaId = info.id
+      }
     } catch (err) {
       console.log('Auto-import Yehua source failed:', err)
     }

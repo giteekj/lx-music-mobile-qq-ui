@@ -30,7 +30,7 @@ export default ({ isHome }: { isHome: boolean }) => {
     ? musicInfo.singer
       ? formatMusicName(downloadFileName, musicInfo.name, musicInfo.singer)
       : musicInfo.name
-    : 'LX Music'
+    : '悦音'
 
   return (
     <TouchableOpacity style={styles.container} onLongPress={handleLongPress} onPress={handlePress} activeOpacity={0.7} >

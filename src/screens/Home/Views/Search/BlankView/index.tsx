@@ -63,7 +63,7 @@ export default forwardRef<BlankViewType, BlankViewProps>(({ onSearch }, ref) => 
           <View style={[styles.welcomeIcon, { backgroundColor: theme['c-primary-alpha-100'] }]}>
             <Icon name="logo" size={40} color={theme['c-primary-font']} />
           </View>
-          <Text size={24} color={theme['c-font']} style={styles.welcomeTitle}>LX Music</Text>
+          <Text size={24} color={theme['c-font']} style={styles.welcomeTitle}>悦音</Text>
           <Text size={14} color={theme['c-font-label']}>{t('search__welcome')}</Text>
         </View>
       )}

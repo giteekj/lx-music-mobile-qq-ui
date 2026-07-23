@@ -141,6 +141,7 @@ export default () => {
           onShowMenu={showMenu}
           onMuiltSelectMode={hancelMultiSelect}
           onSelectAll={isAll => multipleModeBarRef.current?.setIsSelectAll(isAll)}
+          onSelectedCountChange={count => multipleModeBarRef.current?.setSelectedCount(count)}
         />
         <ListMusicSearch
           ref={listMusicSearchRef}

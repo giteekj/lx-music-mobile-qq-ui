@@ -29,7 +29,7 @@ const useQualityTag = (musicInfo: LX.Music.MusicInfoOnline) => {
   return info
 }
 
-export default memo(({ item, index, showSource, onPress, onLongPress, onShowMenu, selectedList, rowInfo, isShowAlbumName, isShowInterval }: {
+export default memo(({ item, index, showSource, onPress, onLongPress, onShowMenu, selectedList, rowInfo, isShowAlbumName, isShowInterval, isMultiSelectMode }: {
   item: LX.Music.MusicInfoOnline
   index: number
   showSource?: boolean
@@ -40,6 +40,7 @@ export default memo(({ item, index, showSource, onPress, onLongPress, onShowMenu
   rowInfo: RowInfo
   isShowAlbumName: boolean
   isShowInterval: boolean
+  isMultiSelectMode: boolean
 }) => {
   const theme = useTheme()
 
@@ -61,7 +62,11 @@ export default memo(({ item, index, showSource, onPress, onLongPress, onShowMenu
   return (
     <View style={{ ...styles.listItem, width: rowInfo.rowWidth, height: ITEM_HEIGHT, backgroundColor: isSelected ? theme['c-primary-background-hover'] : 'rgba(0,0,0,0)' }}>
       <TouchableOpacity style={styles.listItemLeft} onPress={() => { onPress(item, index) }} onLongPress={() => { onLongPress(item, index) }}>
-        <Text style={styles.sn} size={13} color={theme['c-300']}>{index + 1}</Text>
+        {
+          isMultiSelectMode
+            ? <Icon name={isSelected ? 'checkbox-marked' : 'checkbox-blank-outline'} size={18} color={isSelected ? theme['c-primary-font'] : theme['c-350']} style={styles.checkbox} />
+            : <Text style={styles.sn} size={13} color={theme['c-300']}>{index + 1}</Text>
+        }
         <View style={styles.itemInfo}>
           <Text numberOfLines={1}>{item.name}</Text>
           <View style={styles.listItemSingle}>
@@ -71,14 +76,16 @@ export default memo(({ item, index, showSource, onPress, onLongPress, onShowMenu
           </View>
         </View>
         {
-          isShowInterval ? (
+          isShowInterval && !isMultiSelectMode ? (
             <Text size={12} color={theme['c-250']} numberOfLines={1}>{item.interval}</Text>
           ) : null
         }
       </TouchableOpacity>
-     <TouchableOpacity onPress={handleShowMenu} ref={moreButtonRef} style={styles.moreButton}>
+     {!isMultiSelectMode && (
+       <TouchableOpacity onPress={handleShowMenu} ref={moreButtonRef} style={styles.moreButton}>
         <Icon name="dots-vertical" style={{ color: theme['c-350'] }} size={12} />
       </TouchableOpacity>
+     )}
     </View>
   )
 }, (prevProps, nextProps) => {
@@ -86,7 +93,8 @@ export default memo(({ item, index, showSource, onPress, onLongPress, onShowMenu
     prevProps.index === nextProps.index &&
     prevProps.isShowAlbumName === nextProps.isShowAlbumName &&
     prevProps.isShowInterval === nextProps.isShowInterval &&
-    nextProps.selectedList.includes(nextProps.item) == prevProps.selectedList.includes(nextProps.item)
+    prevProps.isMultiSelectMode === nextProps.isMultiSelectMode &&
+    nextProps.selectedList.includes(nextProps.item) == prevProps.selectedList.includes(prevProps.item)
   )
 })
 
@@ -112,6 +120,12 @@ const styles = createStyle({
     // fontSize: 12,
     textAlign: 'center',
     // backgroundColor: 'rgba(0,0,0,0.2)',
+    paddingLeft: 3,
+    paddingRight: 3,
+  },
+  checkbox: {
+    width: 38,
+    textAlign: 'center',
     paddingLeft: 3,
     paddingRight: 3,
   },

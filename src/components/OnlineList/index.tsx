@@ -86,6 +86,7 @@ export default forwardRef<OnlineListType, OnlineListProps>(({
           onShowMenu={showMenu}
           onMuiltSelectMode={hancelMultiSelect}
           onSelectAll={isAll => multipleModeBarRef.current?.setIsSelectAll(isAll)}
+          onSelectedCountChange={count => multipleModeBarRef.current?.setSelectedCount(count)}
           onRefresh={onRefresh}
           onLoadMore={onLoadMore}
           onPlayList={onPlayList}

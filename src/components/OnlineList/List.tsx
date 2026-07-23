@@ -24,6 +24,7 @@ export interface ListProps {
   onShowMenu: (musicInfo: LX.Music.MusicInfoOnline, index: number, position: Position) => void
   onMuiltSelectMode: () => void
   onSelectAll: (isAll: boolean) => void
+  onSelectedCountChange?: (count: number) => void
   onRefresh: () => void
   onLoadMore: () => void
   onPlayList?: (index: number) => void
@@ -48,6 +49,7 @@ const List = forwardRef<ListType, ListProps>(({
   onShowMenu,
   onMuiltSelectMode,
   onSelectAll,
+  onSelectedCountChange,
   onRefresh,
   onLoadMore,
   onPlayList,
@@ -85,6 +87,8 @@ const List = forwardRef<ListType, ListProps>(({
       if (!isMultiSelectMode) {
         prevSelectIndexRef.current = -1
         handleUpdateSelectedList([])
+      } else {
+        onSelectedCountChange?.(0)
       }
       setVisibleMultiSelect(isMultiSelectMode)
     },
@@ -100,6 +104,7 @@ const List = forwardRef<ListType, ListProps>(({
       }
       selectedListRef.current = list
       setSelectedList(list)
+      onSelectedCountChange?.(list.length)
     },
     getSelectedList() {
       return selectedListRef.current
@@ -116,6 +121,7 @@ const List = forwardRef<ListType, ListProps>(({
   const handleUpdateSelectedList = (newList: LX.Music.MusicInfoOnline[]) => {
     if (selectedListRef.current.length && newList.length == currentList.length) onSelectAll(true)
     else if (selectedListRef.current.length == currentList.length) onSelectAll(false)
+    onSelectedCountChange?.(newList.length)
     selectedListRef.current = newList
     setSelectedList(newList)
   }
@@ -192,6 +198,7 @@ const List = forwardRef<ListType, ListProps>(({
       rowInfo={rowInfo.current}
       isShowAlbumName={isShowAlbumName}
       isShowInterval={isShowInterval}
+      isMultiSelectMode={visibleMultiSelect}
     />
   )
   const getkey: FlatListType['keyExtractor'] = item => item.id

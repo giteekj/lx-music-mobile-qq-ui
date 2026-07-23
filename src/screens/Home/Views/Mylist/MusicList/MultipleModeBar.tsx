@@ -18,6 +18,7 @@ export interface MultipleModeBarType {
   show: () => void
   setVisibleBar: (visible: boolean) => void
   setIsSelectAll: (isAll: boolean) => void
+  setSelectedCount: (count: number) => void
   setSwitchMode: (mode: SelectMode) => void
   exitSelectMode: () => void
 }
@@ -30,6 +31,7 @@ export default forwardRef<MultipleModeBarType, MultipleModeBarProps>(({ onSelect
   const animTranslateY = useRef(new Animated.Value(0)).current
   const [selectMode, setSelectMode] = useState<SelectMode>('single')
   const [isSelectAll, setIsSelectAll] = useState(false)
+  const [selectedCount, setSelectedCount] = useState(0)
   const [visibleBar, setVisibleBar] = useState(true)
   const theme = useTheme()
 
@@ -42,6 +44,9 @@ export default forwardRef<MultipleModeBarType, MultipleModeBarProps>(({ onSelect
     },
     setIsSelectAll(isAll) {
       setIsSelectAll(isAll)
+    },
+    setSelectedCount(count) {
+      setSelectedCount(count)
     },
     setSwitchMode(mode: SelectMode) {
       setSelectMode(mode)
@@ -115,6 +120,9 @@ export default forwardRef<MultipleModeBarType, MultipleModeBarProps>(({ onSelect
   const component = useMemo(() => {
     return (
       <Animated.View style={animaStyle}>
+        <View style={styles.countInfo}>
+          <Text size={14} color={theme['c-primary-font']}>{global.i18n.t('list_selected_count', { count: selectedCount })}</Text>
+        </View>
         <View style={styles.switchBtn}>
           <Button onPress={() => { onSwitchMode('single') }} style={{ ...styles.btn, backgroundColor: selectMode == 'single' ? theme['c-button-background'] : 'rgba(0,0,0,0)' }}>
             <Text color={theme['c-button-font']}>{global.i18n.t('list_select_single')}</Text>
@@ -131,7 +139,7 @@ export default forwardRef<MultipleModeBarType, MultipleModeBarProps>(({ onSelect
         </TouchableOpacity>
       </Animated.View>
     )
-  }, [animaStyle, selectMode, theme, handleSelectAll, isSelectAll, onExitSelectMode, onSwitchMode])
+  }, [animaStyle, selectMode, theme, handleSelectAll, isSelectAll, selectedCount, onExitSelectMode, onSwitchMode])
 
   return !visible && animatePlayed ? null : component
 })
@@ -145,16 +153,20 @@ const styles = createStyle({
     width: '100%',
     height: '100%',
     flexDirection: 'row',
+    alignItems: 'center',
     borderBottomWidth: BorderWidths.normal,
+  },
+  countInfo: {
+    paddingLeft: 16,
+    paddingRight: 8,
   },
   switchBtn: {
     flexDirection: 'row',
     flex: 1,
   },
   btn: {
-    // flex: 1,
-    paddingLeft: 18,
-    paddingRight: 18,
+    paddingLeft: 14,
+    paddingRight: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -21,6 +21,7 @@ export interface ListProps {
   onShowMenu: (musicInfo: LX.Music.MusicInfo, index: number, position: Position) => void
   onMuiltSelectMode: () => void
   onSelectAll: (isAll: boolean) => void
+  onSelectedCountChange?: (count: number) => void
 }
 export interface ListType {
   setIsMultiSelectMode: (isMultiSelectMode: boolean) => void
@@ -44,7 +45,7 @@ const usePlayIndex = () => {
 }
 
 
-const List = forwardRef<ListType, ListProps>(({ onShowMenu, onMuiltSelectMode, onSelectAll }, ref) => {
+const List = forwardRef<ListType, ListProps>(({ onShowMenu, onMuiltSelectMode, onSelectAll, onSelectedCountChange }, ref) => {
   // const t = useI18n()
   const flatListRef = useRef<FlatList>(null)
   const [currentList, setList] = useState<LX.List.ListMusics>([])
@@ -54,6 +55,7 @@ const List = forwardRef<ListType, ListProps>(({ onShowMenu, onMuiltSelectMode, o
   const prevSelectIndexRef = useRef(-1)
   const [selectedList, setSelectedList] = useState<LX.List.ListMusics>([])
   const selectedListRef = useRef<LX.List.ListMusics>([])
+  const [visibleMultiSelect, setVisibleMultiSelect] = useState(false)
   const currentListIdRef = useRef('')
   const waitJumpListPositionRef = useRef(false)
   const rowInfo = useRef(getRowInfo())
@@ -67,7 +69,10 @@ const List = forwardRef<ListType, ListProps>(({ onShowMenu, onMuiltSelectMode, o
       if (!isMultiSelectMode) {
         prevSelectIndexRef.current = -1
         handleUpdateSelectedList([])
+      } else {
+        onSelectedCountChange?.(0)
       }
+      setVisibleMultiSelect(isMultiSelectMode)
     },
     setSelectMode(mode) {
       selectModeRef.current = mode
@@ -81,6 +86,7 @@ const List = forwardRef<ListType, ListProps>(({ onShowMenu, onMuiltSelectMode, o
       }
       selectedListRef.current = list
       setSelectedList(list)
+      onSelectedCountChange?.(list.length)
     },
     getSelectedList() {
       return selectedListRef.current
@@ -185,6 +191,7 @@ const List = forwardRef<ListType, ListProps>(({ onShowMenu, onMuiltSelectMode, o
   const handleUpdateSelectedList = (newList: LX.List.ListMusics) => {
     if (selectedListRef.current.length && newList.length == currentList.length) onSelectAll(true)
     else if (selectedListRef.current.length == currentList.length) onSelectAll(false)
+    onSelectedCountChange?.(newList.length)
     selectedListRef.current = newList
     setSelectedList(newList)
   }
@@ -261,6 +268,7 @@ const List = forwardRef<ListType, ListProps>(({ onShowMenu, onMuiltSelectMode, o
       rowInfo={rowInfo.current}
       isShowAlbumName={isShowAlbumName}
       isShowInterval={isShowInterval}
+      isMultiSelectMode={visibleMultiSelect}
     />
   )
   const getkey: FlatListType['keyExtractor'] = item => item.id

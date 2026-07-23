@@ -1,6 +1,7 @@
 import { View } from 'react-native'
 import Button from '@/components/common/Button'
 import Text from '@/components/common/Text'
+import { Icon } from '@/components/common/Icon'
 import { BorderWidths } from '@/theme'
 import { createStyle, toast } from '@/utils/tools'
 import { useTheme } from '@/store/theme/hook'
@@ -29,6 +30,7 @@ export default ({ listInfo, onPress, musicInfo, width }: {
         style={{ ...styles.button, backgroundColor: theme['c-button-background'], borderColor: theme['c-primary-light-400-alpha-300'], opacity: isExists ? 0.4 : 1 }}
         onPress={handlePress}
       >
+        <Icon name="list-order" size={14} color={isExists ? theme['c-350'] : theme['c-button-font']} style={styles.icon} />
         <Text numberOfLines={1} size={14} color={theme['c-button-font']}>{listInfo.name}</Text>
       </Button>
     </View>
@@ -42,15 +44,19 @@ export const styles = createStyle({
     // backgroundColor: 'rgba(0,0,0,0.2)',
   },
   button: {
-    height: 36,
-    paddingLeft: 10,
-    paddingRight: 10,
+    height: 42,
+    paddingLeft: 12,
+    paddingRight: 12,
     marginRight: 10,
     marginBottom: 10,
     borderRadius: 4,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
     borderWidth: BorderWidths.normal1,
+  },
+  icon: {
+    marginRight: 6,
   },
 })
