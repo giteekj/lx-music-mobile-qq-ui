@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { navigations } from '@/navigation'
 import { usePlayerMusicInfo } from '@/store/player/hook'
-import { scaleSizeH } from '@/utils/pixelRatio'
+import { scaleSizeH, scaleSizeW } from '@/utils/pixelRatio'
 import commonState from '@/store/common/state'
 import playerState from '@/store/player/state'
 import { LIST_IDS, NAV_SHEAR_NATIVE_IDS } from '@/config/constant'
@@ -9,25 +9,22 @@ import Image from '@/components/common/Image'
 import { useCallback } from 'react'
 import { setLoadErrorPicUrl, setMusicInfo } from '@/core/player/playInfo'
 
-const PIC_HEIGHT = scaleSizeH(46)
+const PIC_SIZE = scaleSizeW(48)
 
 const styles = StyleSheet.create({
   image: {
-    width: PIC_HEIGHT,
-    height: PIC_HEIGHT,
-    borderRadius: 2,
+    width: PIC_SIZE,
+    height: PIC_SIZE,
+    borderRadius: 8,
+    borderWidth: 0,
   },
 })
 
 export default ({ isHome }: { isHome: boolean }) => {
   const musicInfo = usePlayerMusicInfo()
   const handlePress = () => {
-    // console.log('')
-    // console.log(playMusicInfo)
     if (!musicInfo.id) return
     navigations.pushPlayDetailScreen(commonState.componentIds.home!)
-
-    // toast(global.i18n.t('play_detail_todo_tip'), 'long')
   }
 
   const handleLongPress = () => {
@@ -50,10 +47,3 @@ export default ({ isHome }: { isHome: boolean }) => {
     </TouchableOpacity>
   )
 }
-
-
-// const styles = StyleSheet.create({
-//   playInfoImg: {
-
-//   },
-// })
